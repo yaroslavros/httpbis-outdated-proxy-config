@@ -8,7 +8,7 @@ number:
 date:
 consensus: true
 v: 3
-area: WIT
+area: "Web and Internet Transport"
 workgroup: "Multiplexed Application Substrate over QUIC Encryption"
 keyword:
  - PAC
@@ -16,10 +16,10 @@ keyword:
  - outdated
 venue:
   group: "Multiplexed Application Substrate over QUIC Encryption"
-  type: Working Group
+  type: "Working Group"
   mail: "masque@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/masque/"
-  github: yaroslavros/masque-outdated-proxy-config
+  github: "yaroslavros/masque-outdated-proxy-config"
   latest: "https://yaroslavros.github.io/masque-outdated-proxy-config/draft-rosomakho-masque-outdated-proxy-config.html"
 
 author:
