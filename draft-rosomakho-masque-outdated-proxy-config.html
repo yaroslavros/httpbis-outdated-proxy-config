@@ -7,7 +7,7 @@
 <title>Detecting Outdated Proxy Configuration</title>
 <meta content="Yaroslav Rosomakho" name="author">
 <meta content="
-       TODO Abstract 
+       This document defines a lightweight mechanism that allows explicit HTTP proxies to inform clients when their proxy configuration, such as a Proxy Auto-Configuration (PAC) file or Provisioning Domain (PvD) proxy configuration, is outdated. Clients signal to the proxy the configuration URL and the timestamp of when it was last fetched. In response, the proxy may indicate that a newer version of the configuration is available. This enables clients to refresh their configuration without relying on frequent polling or short expiration intervals. The mechanism is designed to be compatible with existing proxy deployment models and supports both PAC-based and PvD-based configurations. 
     " name="description">
 <meta content="xml2rfc 3.28.1" name="generator">
 <meta content="PAC" name="keyword">
@@ -1050,7 +1050,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rosomakho</td>
-<td class="center">Expires 10 December 2025</td>
+<td class="center">Expires 11 December 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1063,12 +1063,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-rosomakho-masque-outdated-proxy-config-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-08" class="published">8 June 2025</time>
+<time datetime="2025-06-09" class="published">9 June 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-10">10 December 2025</time></dd>
+<dd class="expires"><time datetime="2025-12-11">11 December 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1081,7 +1081,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">Detecting Outdated Proxy Configuration</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">TODO Abstract<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines a lightweight mechanism that allows explicit HTTP proxies to inform clients when their proxy configuration, such as a Proxy Auto-Configuration (PAC) file or Provisioning Domain (PvD) proxy configuration, is outdated. Clients signal to the proxy the configuration URL and the timestamp of when it was last fetched. In response, the proxy may indicate that a newer version of the configuration is available. This enables clients to refresh their configuration without relying on frequent polling or short expiration intervals. The mechanism is designed to be compatible with existing proxy deployment models and supports both PAC-based and PvD-based configurations.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1118,7 +1118,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 10 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 11 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1154,19 +1154,58 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-protocol-overview" class="internal xref">Protocol Overview</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-proxy-config-header" class="internal xref">Proxy-Config Header</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-handling-unknown-or-sensiti" class="internal xref">Handling Unknown or Sensitive URLs</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-examples" class="internal xref">Examples</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-proxy-config-stale-header" class="internal xref"><code>Proxy-Config-Stale</code> Header</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-avoiding-sensitive-urls" class="internal xref">Avoiding Sensitive URLs</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-trusted-communication-chann" class="internal xref">Trusted Communication Channels</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-authentication-related-resp" class="internal xref">Authentication-related Responses</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.4">
+                <p id="section-toc.1-1.6.2.4.1"><a href="#section-6.4" class="auto internal xref">6.4</a>.  <a href="#name-denial-of-service-considera" class="internal xref">Denial-of-Service Considerations</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1177,7 +1216,25 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">TODO Introduction<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">Explicit HTTP proxies are widely deployed in enterprise and managed network environments to enforce routing policies, enable traffic inspection, or implement access control. Clients relying on such proxies typically obtain configuration through a Proxy Auto-Configuration (PAC) file <span>[<a href="#PAC-FILE" class="cite xref">PAC-FILE</a>]</span> or a Provisioning Domain (PvD) <span>[<a href="#PROXY-PVD" class="cite xref">PROXY-PVD</a>]</span>. In many deployments, it is necessary to update these configurations in response to operational changes such as service onboarding, emergency routing adjustments, or policy corrections.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Currently, clients have limited mechanisms to detect whether the proxy configuration they are using is stale. As a result, PAC files are often polled at short intervals, and PvD expiration times are configured with low values to accelerate refreshes. These approaches are inefficient and may introduce unnecessary network traffic or delay the application of important updates.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">This document defines a simple mechanism that enables a proxy to inform a client that its current configuration is outdated. The client includes in its request a structured field indicating the URL of the PAC file or PvD and the timestamp of when it last fetched the configuration. If the proxy recognizes the configuration and determines that a newer version is available, it may respond with a boolean indicator prompting the client to refresh the configuration.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">This mechanism applies to all forms of explicit proxying over HTTP, including:<a href="#section-1-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1-5.1">
+          <p id="section-1-5.1.1">HTTP CONNECT as defined <span><a href="https://rfc-editor.org/rfc/rfc9110#section-9.3.6" class="relref">Section 9.3.6</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span><a href="#section-1-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.2">
+          <p id="section-1-5.2.1"><span>[<a href="#CONNECT-UDP" class="cite xref">CONNECT-UDP</a>]</span><a href="#section-1-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.3">
+          <p id="section-1-5.3.1"><span>[<a href="#CONNECT-IP" class="cite xref">CONNECT-IP</a>]</span><a href="#section-1-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.4">
+          <p id="section-1-5.4.1">Templated <span>[<a href="#CONNECT-TCP" class="cite xref">CONNECT-TCP</a>]</span><a href="#section-1-5.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-1-6">The mechanism is optional, compatible with existing protocols, and requires no persistent state. It allows clients to discover configuration updates proactively while preserving the existing operational model.<a href="#section-1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1191,37 +1248,224 @@ described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</s
 appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="security-considerations">
+<div id="protocol-overview">
 <section id="section-3">
-      <h2 id="name-security-considerations">
-<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      <h2 id="name-protocol-overview">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-protocol-overview" class="section-name selfRef">Protocol Overview</a>
       </h2>
-<p id="section-3-1">TODO Security<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">To enable detection of stale proxy configuration, clients may include a <code>Proxy-Config</code> HTTP header field in requests sent to an explicit proxy. This header communicates the URL of the proxy configuration (such as a PAC file or PvD) and the timestamp of when the client last fetched it.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">Upon receiving a request containing the <code>Proxy-Config</code> header, a proxy that supports this mechanism compares the provided timestamp with the most recent update time of the corresponding configuration. If the proxy determines that the client configuration is outdated, it can signal this condition using the <code>Proxy-Config-Stale</code> response header.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">This mechanism is optional and advisory. Proxies are not required to track or respond to client configuration metadata, and clients are not required to act immediately upon receiving a staleness indication. The mechanism is designed to supplement, not replace, existing configuration refresh behaviors.<a href="#section-3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="proxy-config-header">
+<section id="section-4">
+      <h2 id="name-proxy-config-header">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-proxy-config-header" class="section-name selfRef">Proxy-Config Header</a>
+      </h2>
+<p id="section-4-1">The <code>Proxy-Config</code> request header field is used by a client to inform an explicit proxy about the proxy configuration it is currently using. The field conveys a dictionary structured field as defined in <span><a href="https://rfc-editor.org/rfc/rfc9651#section-3.2" class="relref">Section 3.2</a> of [<a href="#STRUCTURED-FIELD" class="cite xref">STRUCTURED-FIELD</a>]</span> with the following keys:<a href="#section-4-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4-2.1">
+          <p id="section-4-2.1.1"><code>url</code> (optional): A string identifying the URL from which the client fetched the configuration. This may point to a PAC file or a PvD configuration. If omitted, the proxy is expected to infer the default PvD URI based on its own hostname and ".well-known/pvd" path as defined in <span><a href="https://rfc-editor.org/rfc/rfc8801#section-4.1" class="relref">Section 4.1</a> of [<a href="#PVDDATA" class="cite xref">PVDDATA</a>]</span>.<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-4-2.2">
+          <p id="section-4-2.2.1"><code>fetched</code> (required): A date value indicating when the client last fetched the configuration. The value <span class="bcp14">MUST</span> use the Date format defined in <span><a href="https://rfc-editor.org/rfc/rfc9651#section-3.3.7" class="relref">Section 3.3.7</a> of [<a href="#STRUCTURED-FIELD" class="cite xref">STRUCTURED-FIELD</a>]</span>.<a href="#section-4-2.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<div id="handling-unknown-or-sensitive-urls">
+<section id="section-4.1">
+        <h3 id="name-handling-unknown-or-sensiti">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-handling-unknown-or-sensiti" class="section-name selfRef">Handling Unknown or Sensitive URLs</a>
+        </h3>
+<p id="section-4.1-1">Clients <span class="bcp14">MUST NOT</span> include URLs that expose local system information (e.g., <code>file://</code> URLs). Clients <span class="bcp14">SHOULD</span> limit use of the Proxy-Config header to contexts where it does not introduce privacy or security risks, such as trusted or encrypted proxy connections.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="examples">
+<section id="section-4.2">
+        <h3 id="name-examples">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
+        </h3>
+<p id="section-4.2-1">A client using a PAC file retrieved from <code>https://config.example.net/proxy.pac</code> at 2025-06-01T00:00:00Z <span class="bcp14">MAY</span> include the following header:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<span id="name-example-of-proxy-config-hea"></span><figure id="figure-1">
+          <div class="alignLeft art-ascii-art art-text artwork" id="section-4.2-2.1">
+<pre>
+Proxy-Config: url="https://config.example.net/proxy.pac", fetched=@1748736000
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-example-of-proxy-config-hea" class="selfRef">Example of Proxy-Config header with url field</a>
+          </figcaption></figure>
+<p id="section-4.2-3">If the client is using the default PvD URI associated with the proxy hostname, it may omit the <code>url</code> key:<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<span id="name-example-of-proxy-config-head"></span><figure id="figure-2">
+          <div class="alignLeft art-ascii-art art-text artwork" id="section-4.2-4.1">
+<pre>
+Proxy-Config: fetched=@1748736000
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-example-of-proxy-config-head" class="selfRef">Example of Proxy-Config header without url field</a>
+          </figcaption></figure>
+</section>
+</div>
+</section>
+</div>
+<div id="proxy-config-stale-header">
+<section id="section-5">
+      <h2 id="name-proxy-config-stale-header">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-proxy-config-stale-header" class="section-name selfRef"><code>Proxy-Config-Stale</code> Header</a>
+      </h2>
+<p id="section-5-1">The <code>Proxy-Config-Stale</code> response header field is used by a proxy to inform the client whether its current proxy configuration is considered outdated. This allows the client to make informed decisions about whether to refresh the configuration.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">The field is a boolean as defined in <span><a href="https://rfc-editor.org/rfc/rfc9651#section-3.3.6" class="relref">Section 3.3.6</a> of [<a href="#STRUCTURED-FIELD" class="cite xref">STRUCTURED-FIELD</a>]</span>, where:<a href="#section-5-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5-3.1">
+          <p id="section-5-3.1.1"><code>?1</code> indicates that the configuration used by the client is stale and a newer version is available.<a href="#section-5-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-5-3.2">
+          <p id="section-5-3.2.1"><code>?0</code> indicates that the configuration used by the client is current.<a href="#section-5-3.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-5-4">The proxy <span class="bcp14">MUST</span> only include this header if it has received a valid <code>Proxy-Config</code> header from the client and is able to recognize and evaluate the configuration URL. If the proxy does not recognize the provided configuration URL, does not track updates for it, or does not support this mechanism, it <span class="bcp14">MUST</span> omit the <code>Proxy-Config-Stale</code> header.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">The <code>Proxy-Config-Stale</code> header <span class="bcp14">MAY</span> appear in both successful and error responses, except for responses related to client authentication (e.g., <code>407 Proxy Authentication Required</code>). Including the header in such authentication-related responses could result in unintended exposure of configuration metadata and may interfere with authentication workflows.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">The <code>Proxy-Config-Stale</code> field is advisory. Its presence does not affect the processing of the current request or response. Clients <span class="bcp14">MAY</span> choose how and when to act upon the information, including deferring configuration refresh until convenient.<a href="#section-5-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-6">
+      <h2 id="name-security-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-6-1">Clients using the <code>Proxy-Config</code> header field must take care to avoid disclosing sensitive information in the URL or metadata they send to the proxy.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<div id="avoiding-sensitive-urls">
+<section id="section-6.1">
+        <h3 id="name-avoiding-sensitive-urls">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-avoiding-sensitive-urls" class="section-name selfRef">Avoiding Sensitive URLs</a>
+        </h3>
+<p id="section-6.1-1">Clients <span class="bcp14">MUST NOT</span> include configuration URLs that reveal local system details, such as <code>file:// URIs</code> or paths containing user-specific or internal directory structures. To reduce exposure, clients <span class="bcp14">SHOULD</span> only use this mechanism when proxy configuration is relevant to the proxy (e.g., hosted on the proxy or a part of the same enterprise domain).<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="trusted-communication-channels">
+<section id="section-6.2">
+        <h3 id="name-trusted-communication-chann">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-trusted-communication-chann" class="section-name selfRef">Trusted Communication Channels</a>
+        </h3>
+<p id="section-6.2-1">The <code>Proxy-Config</code> header is intended for use over secure and trusted communication channels. Clients <span class="bcp14">SHOULD</span> send this header only when using TLS or when otherwise confident that the request is not observable or modifiable by unauthorized intermediaries.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authentication-related-responses">
+<section id="section-6.3">
+        <h3 id="name-authentication-related-resp">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-authentication-related-resp" class="section-name selfRef">Authentication-related Responses</a>
+        </h3>
+<p id="section-6.3-1">Proxies <span class="bcp14">MUST NOT</span> include the <code>Proxy-Config-Stale</code> header in responses related to client authentication (e.g., <code>407 Proxy Authentication Required</code>). This avoids potential leakage of client configuration metadata during authentication flows that may be visible to other components or exposed through logging or error handling.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="denial-of-service-considerations">
+<section id="section-6.4">
+        <h3 id="name-denial-of-service-considera">
+<a href="#section-6.4" class="section-number selfRef">6.4. </a><a href="#name-denial-of-service-considera" class="section-name selfRef">Denial-of-Service Considerations</a>
+        </h3>
+<p id="section-6.4-1">A misconfigured or malicious proxy could include <code>Proxy-Config-Stale: ?1</code> in every response, causing the client to repeatedly refetch proxy configuration. This behavior can lead to excessive network traffic, CPU usage, or degraded performance on the client, particularly in environments where configuration retrieval is resource-intensive.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
+<p id="section-6.4-2">To mitigate this risk, clients <span class="bcp14">MUST</span> implement appropriate rate limiting or throttling mechanisms when acting on stale configuration indications. For example, a client may choose to ignore repeated <code>?1</code> responses within a minimum refresh interval or apply exponential backoff when encountering multiple stale signals in quick succession.<a href="#section-6.4-2" class="pilcrow">¶</a></p>
+<p id="section-6.4-3">Clients <span class="bcp14">SHOULD</span> validate the authenticity and integrity of any fetched configuration before applying it, and ensure that configuration refreshes do not interfere with ongoing connection or session state.<a href="#section-6.4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-4">
+<section id="section-7">
       <h2 id="name-iana-considerations">
-<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-4-1">This document has no IANA actions.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-7-1">This document registers the following HTTP header fields in the "Hypertext Transfer Protocol (HTTP) Field Name Registry":<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">Proxy-Config<a href="#section-7-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7-3.1">
+          <p id="section-7-3.1.1">Field Name: Proxy-Config<a href="#section-7-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-7-3.2">
+          <p id="section-7-3.2.1">Status: permanent<a href="#section-7-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-7-3.3">
+          <p id="section-7-3.3.1">Reference: this document<a href="#section-7-3.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-7-4">Proxy-Config-Stale<a href="#section-7-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7-5.1">
+          <p id="section-7-5.1.1">Field Name: Proxy-Config-Stale<a href="#section-7-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-7-5.2">
+          <p id="section-7-5.2.1">Status: permanent<a href="#section-7-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-7-5.3">
+          <p id="section-7-5.3.1">Reference: this document<a href="#section-7-5.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
 </section>
 </div>
-<div id="sec-normative-references">
-<section id="section-5">
-      <h2 id="name-normative-references">
-<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<div id="sec-combined-references">
+<section id="section-8">
+      <h2 id="name-references">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
+<div id="sec-normative-references">
+<section id="section-8.1">
+        <h3 id="name-normative-references">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
 <dl class="references">
+<dt id="HTTP">[HTTP]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"HTTP Semantics"</span>, <span class="seriesInfo">STD 97</span>, <span class="seriesInfo">RFC 9110</span>, <span class="seriesInfo">DOI 10.17487/RFC9110</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9110">https://www.rfc-editor.org/rfc/rfc9110</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
-    <dd>
+        <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="STRUCTURED-FIELD">[STRUCTURED-FIELD]</dt>
+      <dd>
+<span class="refAuthor">Nottingham, M.</span> and <span class="refAuthor">P. Kamp</span>, <span class="refTitle">"Structured Field Values for HTTP"</span>, <span class="seriesInfo">RFC 9651</span>, <span class="seriesInfo">DOI 10.17487/RFC9651</span>, <time datetime="2024-09" class="refDate">September 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9651">https://www.rfc-editor.org/rfc/rfc9651</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 </dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-8.2">
+        <h3 id="name-informative-references">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="CONNECT-IP">[CONNECT-IP]</dt>
+        <dd>
+<span class="refAuthor">Pauly, T., Ed.</span>, <span class="refAuthor">Schinazi, D.</span>, <span class="refAuthor">Chernyakhovsky, A.</span>, <span class="refAuthor">Kühlewind, M.</span>, and <span class="refAuthor">M. Westerlund</span>, <span class="refTitle">"Proxying IP in HTTP"</span>, <span class="seriesInfo">RFC 9484</span>, <span class="seriesInfo">DOI 10.17487/RFC9484</span>, <time datetime="2023-10" class="refDate">October 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9484">https://www.rfc-editor.org/rfc/rfc9484</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="CONNECT-TCP">[CONNECT-TCP]</dt>
+        <dd>
+<span class="refAuthor">Schwartz, B. M.</span>, <span class="refTitle">"Template-Driven HTTP CONNECT Proxying for TCP"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-connect-tcp-07</span>, <time datetime="2025-03-17" class="refDate">17 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-connect-tcp-07">https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-connect-tcp-07</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="CONNECT-UDP">[CONNECT-UDP]</dt>
+        <dd>
+<span class="refAuthor">Schinazi, D.</span>, <span class="refTitle">"Proxying UDP in HTTP"</span>, <span class="seriesInfo">RFC 9298</span>, <span class="seriesInfo">DOI 10.17487/RFC9298</span>, <time datetime="2022-08" class="refDate">August 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9298">https://www.rfc-editor.org/rfc/rfc9298</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="PAC-FILE">[PAC-FILE]</dt>
+        <dd>
+<span class="refAuthor">Mozilla</span>, <span class="refTitle">"Proxy Auto-Configuration (PAC) file"</span>, <time datetime="2025-05" class="refDate">May 2025</time>, <span>&lt;<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file">https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="PROXY-PVD">[PROXY-PVD]</dt>
+        <dd>
+<span class="refAuthor">Pauly, T.</span>, <span class="refAuthor">Damjanovic, D.</span>, and <span class="refAuthor">Y. Rosomakho</span>, <span class="refTitle">"Communicating Proxy Configurations in Provisioning Domains"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-intarea-proxy-config-04</span>, <time datetime="2025-03-03" class="refDate">3 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-intarea-proxy-config-04">https://datatracker.ietf.org/doc/html/draft-ietf-intarea-proxy-config-04</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="PVDDATA">[PVDDATA]</dt>
+      <dd>
+<span class="refAuthor">Pfister, P.</span>, <span class="refAuthor">Vyncke, É.</span>, <span class="refAuthor">Pauly, T.</span>, <span class="refAuthor">Schinazi, D.</span>, and <span class="refAuthor">W. Shao</span>, <span class="refTitle">"Discovering Provisioning Domain Names and Data"</span>, <span class="seriesInfo">RFC 8801</span>, <span class="seriesInfo">DOI 10.17487/RFC8801</span>, <time datetime="2020-07" class="refDate">July 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8801">https://www.rfc-editor.org/rfc/rfc8801</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
 </section>
 </div>
 <div id="acknowledgments">
