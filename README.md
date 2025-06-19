@@ -4,10 +4,10 @@
 
 This is the working area for the individual Internet-Draft, "Detecting Outdated Proxy Configuration".
 
-* [Editor's Copy](https://yaroslavros.github.io/masque-outdated-proxy-config/#go.draft-rosomakho-masque-outdated-proxy-config.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-rosomakho-masque-outdated-proxy-config)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-rosomakho-masque-outdated-proxy-config)
-* [Compare Editor's Copy to Individual Draft](https://yaroslavros.github.io/masque-outdated-proxy-config/#go.draft-rosomakho-masque-outdated-proxy-config.diff)
+* [Editor's Copy](https://yaroslavros.github.io/httpbis-outdated-proxy-config/#go.draft-rosomakho-httpbis-outdated-proxy-config.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-rosomakho-httpbis-outdated-proxy-config)
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-rosomakho-httpbis-outdated-proxy-config)
+* [Compare Editor's Copy to Individual Draft](https://yaroslavros.github.io/httpbis-outdated-proxy-config/#go.draft-rosomakho-httpbis-outdated-proxy-config.diff)
 
 
 ## Contributing
