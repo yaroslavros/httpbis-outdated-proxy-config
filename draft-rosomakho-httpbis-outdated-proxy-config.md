@@ -2,25 +2,25 @@
 title: "Detecting Outdated Proxy Configuration"
 category: std
 
-docname: draft-rosomakho-masque-outdated-proxy-config-latest
+docname: draft-rosomakho-httpbis-outdated-proxy-config-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
 consensus: true
 v: 3
 area: "Web and Internet Transport"
-workgroup: "Multiplexed Application Substrate over QUIC Encryption"
+workgroup: HTTP
 keyword:
  - PAC
  - PvD
  - outdated
 venue:
-  group: "Multiplexed Application Substrate over QUIC Encryption"
+  group: HTTP
   type: "Working Group"
-  mail: "masque@ietf.org"
-  arch: "https://mailarchive.ietf.org/arch/browse/masque/"
-  github: "yaroslavros/masque-outdated-proxy-config"
-  latest: "https://yaroslavros.github.io/masque-outdated-proxy-config/draft-rosomakho-masque-outdated-proxy-config.html"
+  mail: "ietf-http-wg@w3.org"
+  arch: "https://lists.w3.org/Archives/Public/ietf-http-wg/"
+  github: "yaroslavros/httpbis-outdated-proxy-config"
+  latest: "https://yaroslavros.github.io/httpbis-outdated-proxy-config/draft-rosomakho-httpbis-outdated-proxy-config.html"
 
 author:
  -
