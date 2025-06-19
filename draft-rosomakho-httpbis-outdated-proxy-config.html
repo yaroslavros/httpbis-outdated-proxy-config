@@ -9,14 +9,14 @@
 <meta content="
        This document defines a lightweight mechanism that allows explicit HTTP proxies to inform clients when their proxy configuration, such as a Proxy Auto-Configuration (PAC) file or Provisioning Domain (PvD) proxy configuration, is outdated. Clients signal to the proxy the configuration URL and the timestamp of when it was last fetched. In response, the proxy may indicate that a newer version of the configuration is available. This enables clients to refresh their configuration without relying on frequent polling or short expiration intervals. The mechanism is designed to be compatible with existing proxy deployment models and supports both PAC-based and PvD-based configurations. 
     " name="description">
-<meta content="xml2rfc 3.28.1" name="generator">
+<meta content="xml2rfc 3.29.0" name="generator">
 <meta content="PAC" name="keyword">
 <meta content="PvD" name="keyword">
 <meta content="outdated" name="keyword">
-<meta content="draft-rosomakho-masque-outdated-proxy-config-latest" name="ietf.draft">
+<meta content="draft-rosomakho-httpbis-outdated-proxy-config-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.28.1
-    Python 3.12.10
+  xml2rfc 3.29.0
+    Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
@@ -25,11 +25,11 @@
     platformdirs 4.3.8
     pycountry 24.6.1
     PyYAML 6.0.2
-    requests 2.32.3
+    requests 2.32.4
     setuptools 80.9.0
     wcwidth 0.2.13
 -->
-<link href="draft-rosomakho-masque-outdated-proxy-config.xml" rel="alternate" type="application/rfc+xml">
+<link href="draft-rosomakho-httpbis-outdated-proxy-config.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">@font-face {
   font-family: 'Lora';
@@ -1050,7 +1050,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rosomakho</td>
-<td class="center">Expires 11 December 2025</td>
+<td class="center">Expires 21 December 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1058,17 +1058,17 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <div id="internal-metadata" class="document-information">
 <dl id="identifiers">
 <dt class="label-workgroup">Workgroup:</dt>
-<dd class="workgroup">Multiplexed Application Substrate over QUIC Encryption</dd>
+<dd class="workgroup">HTTP</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
-<dd class="internet-draft">draft-rosomakho-masque-outdated-proxy-config-latest</dd>
+<dd class="internet-draft">draft-rosomakho-httpbis-outdated-proxy-config-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-09" class="published">9 June 2025</time>
+<time datetime="2025-06-19" class="published">19 June 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-11">11 December 2025</time></dd>
+<dd class="expires"><time datetime="2025-12-21">21 December 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1089,15 +1089,14 @@ svg :is([fill="white"], [fill^="#fff"]) {
       </h2>
 <p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
 <p id="section-note.1-2">
-        The latest revision of this draft can be found at <span><a href="https://yaroslavros.github.io/masque-outdated-proxy-config/draft-rosomakho-masque-outdated-proxy-config.html">https://yaroslavros.github.io/masque-outdated-proxy-config/draft-rosomakho-masque-outdated-proxy-config.html</a></span>.
-        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-rosomakho-masque-outdated-proxy-config/">https://datatracker.ietf.org/doc/draft-rosomakho-masque-outdated-proxy-config/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+        The latest revision of this draft can be found at <span><a href="https://yaroslavros.github.io/httpbis-outdated-proxy-config/draft-rosomakho-httpbis-outdated-proxy-config.html">https://yaroslavros.github.io/httpbis-outdated-proxy-config/draft-rosomakho-httpbis-outdated-proxy-config.html</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-rosomakho-httpbis-outdated-proxy-config/">https://datatracker.ietf.org/doc/draft-rosomakho-httpbis-outdated-proxy-config/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
 <p id="section-note.1-3">
         Discussion of this document takes place on the
-        Multiplexed Application Substrate over QUIC Encryption Working Group mailing list (<span><a href="mailto:masque@ietf.org">mailto:masque@ietf.org</a></span>),
-        which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/masque/">https://mailarchive.ietf.org/arch/browse/masque/</a></span>.
-        Subscribe at <span><a href="https://www.ietf.org/mailman/listinfo/masque/">https://www.ietf.org/mailman/listinfo/masque/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+        HTTP Working Group mailing list (<span><a href="mailto:ietf-http-wg@w3.org">mailto:ietf-http-wg@w3.org</a></span>),
+        which is archived at <span><a href="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
 <p id="section-note.1-4">Source for this draft and an issue tracker can be found at
-        <span><a href="https://github.com/yaroslavros/masque-outdated-proxy-config">https://github.com/yaroslavros/masque-outdated-proxy-config</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+        <span><a href="https://github.com/yaroslavros/httpbis-outdated-proxy-config">https://github.com/yaroslavros/httpbis-outdated-proxy-config</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1118,7 +1117,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 11 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 21 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1445,7 +1444,7 @@ Proxy-Config: fetched=@1748736000
 <dd class="break"></dd>
 <dt id="CONNECT-TCP">[CONNECT-TCP]</dt>
         <dd>
-<span class="refAuthor">Schwartz, B. M.</span>, <span class="refTitle">"Template-Driven HTTP CONNECT Proxying for TCP"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-connect-tcp-07</span>, <time datetime="2025-03-17" class="refDate">17 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-connect-tcp-07">https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-connect-tcp-07</a>&gt;</span>. </dd>
+<span class="refAuthor">Schwartz, B. M.</span>, <span class="refTitle">"Template-Driven HTTP CONNECT Proxying for TCP"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-connect-tcp-08</span>, <time datetime="2025-06-11" class="refDate">11 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-connect-tcp-08">https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-connect-tcp-08</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="CONNECT-UDP">[CONNECT-UDP]</dt>
         <dd>
