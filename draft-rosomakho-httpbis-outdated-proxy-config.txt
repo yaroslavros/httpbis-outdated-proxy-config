@@ -4,8 +4,8 @@
 
 HTTP                                                        Y. Rosomakho
 Internet-Draft                                                   Zscaler
-Intended status: Standards Track                            19 June 2025
-Expires: 21 December 2025
+Intended status: Standards Track                            29 June 2025
+Expires: 31 December 2025
 
 
                  Detecting Outdated Proxy Configuration
@@ -57,7 +57,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 21 December 2025.
+   This Internet-Draft will expire on 31 December 2025.
 
 Copyright Notice
 
@@ -359,9 +359,9 @@ Proxy-Config: url="https://config.example.net/proxy.pac", fetched=@1748736000
               Pauly, T., Damjanovic, D., and Y. Rosomakho,
               "Communicating Proxy Configurations in Provisioning
               Domains", Work in Progress, Internet-Draft, draft-ietf-
-              intarea-proxy-config-04, 3 March 2025,
+              intarea-proxy-config-06, 26 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-intarea-
-              proxy-config-04>.
+              proxy-config-06>.
 
    [PVDDATA]  Pfister, P., Vyncke, É., Pauly, T., Schinazi, D., and W.
               Shao, "Discovering Provisioning Domain Names and Data",
@@ -370,7 +370,8 @@ Proxy-Config: url="https://config.example.net/proxy.pac", fetched=@1748736000
 
 Acknowledgments
 
-   TODO acknowledge.
+   Thanks to Tommy Pauly and Dragana Damjanovic for reviewing the
+   concept and providing initial feedback.
 
 Author's Address
 
