@@ -161,4 +161,4 @@ Proxy-Config-Stale
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge.
+Thanks to Tommy Pauly and Dragana Damjanovic for reviewing the concept and providing initial feedback.
