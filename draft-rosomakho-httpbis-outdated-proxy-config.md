@@ -29,6 +29,9 @@ author:
     email: yrosomakho@zscaler.com
 
 normative:
+  H1:
+    =: RFC9112
+    display: HTTP/1.1
 
 
 informative:
@@ -53,12 +56,14 @@ Currently, clients have limited mechanisms to detect whether the proxy configura
 
 This document defines a simple mechanism that enables a proxy to inform a client that its current configuration is outdated. The client includes in its request a structured field indicating the URL of the PAC file or PvD and the timestamp of when it last fetched the configuration. If the proxy recognizes the configuration and determines that a newer version is available, it may respond with a boolean indicator prompting the client to refresh the configuration.
 
-This mechanism applies to all forms of explicit proxying over HTTP, including:
+This mechanism applies to forms of explicit proxying over HTTP where there is a clear separation between client headers intended for the proxy and headers intended for the origin server. This includes:
 
 - HTTP CONNECT as defined {{Section 9.3.6 of !HTTP=RFC9110}}
 - {{?CONNECT-UDP=RFC9298}}
 - {{?CONNECT-IP=RFC9484}}
 - Templated {{?CONNECT-TCP=I-D.ietf-httpbis-connect-tcp}}
+
+This mechanism is not applicable to HTTP/1.1 proxying modes that use the "absolute-form" request URI defined in {{Section 3.2.2 of H1}} with HTTP methods other than CONNECT.
 
 The mechanism is optional, compatible with existing protocols, and requires no persistent state. It allows clients to discover configuration updates proactively while preserving the existing operational model.
 
@@ -78,8 +83,10 @@ This mechanism is optional and advisory. Proxies are not required to track or re
 
 The `Proxy-Config` request header field is used by a client to inform an explicit proxy about the proxy configuration it is currently using. The field conveys a dictionary structured field as defined in {{Section 3.2 of !STRUCTURED-FIELD=RFC9651}} with the following keys:
 
-- `url` (optional): A string identifying the URL from which the client fetched the configuration. This may point to a PAC file or a PvD configuration. If omitted, the proxy is expected to infer the default PvD URI based on its own hostname and ".well-known/pvd" path as defined in {{Section 4.1 of ?PVDDATA=RFC8801}}.
-- `fetched` (required): A date value indicating when the client last fetched the configuration. The value MUST use the Date format defined in {{Section 3.3.7 of STRUCTURED-FIELD}}.
+* `url` (optional): A string identifying the URL from which the client fetched the configuration. This may point to a PAC file or a PvD configuration. It MAY be omitted in the following cases:
+  - The client is using the default PvD URI based on proxy hostname and ".well-known/pvd" path as defined in {{Section 4.1 of ?PVDDATA=RFC8801}}.
+  - The configuration was provisioned through a mechanism that is not associated with a specific URL, such as enterprise device management or a local policy engine
+* `fetched` (required): A date value indicating when the client last fetched the configuration. The value MUST use the Date format defined in {{Section 3.3.7 of STRUCTURED-FIELD}}.
 
 ## Handling Unknown or Sensitive URLs
 
@@ -139,6 +146,12 @@ A misconfigured or malicious proxy could include `Proxy-Config-Stale: ?1` in eve
 To mitigate this risk, clients MUST implement appropriate rate limiting or throttling mechanisms when acting on stale configuration indications. For example, a client may choose to ignore repeated `?1` responses within a minimum refresh interval or apply exponential backoff when encountering multiple stale signals in quick succession.
 
 Clients SHOULD validate the authenticity and integrity of any fetched configuration before applying it, and ensure that configuration refreshes do not interfere with ongoing connection or session state.
+
+## Inapplicability to Non-CONNECT Proxying Modes
+
+This mechanism is not intended for use with HTTP/1.1 proxying models that rely on the "absolute-form" request URI defined in {{Section 3.2.2 of H1}} with methods other than CONNECT. In such configurations, all client headers may be forwarded by the proxy to the destination server. This can result in unintended disclosure of internal configuration metadata.
+
+Clients MUST ensure that the `Proxy-Config` header is only sent when the proxying mode provides a clear separation between hop-by-hop headers (intended for the proxy) and end-to-end headers (intended for the destination server). This includes CONNECT-based methods such as CONNECT ({{Section 9.3.6 of HTTP}}), {{CONNECT-UDP}}, {{CONNECT-IP}} and templated {{CONNECT-TCP}}. These methods establish a tunnel or encapsulation that ensures `Proxy-Config` header is visible only to the proxy and is not forwarded to the destination server even if the proxy does not recognize it.
 
 # IANA Considerations
 
