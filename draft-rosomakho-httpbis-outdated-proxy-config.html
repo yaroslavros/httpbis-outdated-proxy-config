@@ -9,23 +9,23 @@
 <meta content="
        This document defines a lightweight mechanism that allows explicit HTTP proxies to inform clients when their proxy configuration, such as a Proxy Auto-Configuration (PAC) file or Provisioning Domain (PvD) proxy configuration, is outdated. Clients signal to the proxy the configuration URL and the timestamp of when it was last fetched. In response, the proxy may indicate that a newer version of the configuration is available. This enables clients to refresh their configuration without relying on frequent polling or short expiration intervals. The mechanism is designed to be compatible with existing proxy deployment models and supports both PAC-based and PvD-based configurations. 
     " name="description">
-<meta content="xml2rfc 3.29.0" name="generator">
+<meta content="xml2rfc 3.30.1" name="generator">
 <meta content="PAC" name="keyword">
 <meta content="PvD" name="keyword">
 <meta content="outdated" name="keyword">
 <meta content="draft-rosomakho-httpbis-outdated-proxy-config-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.29.0
+  xml2rfc 3.30.1
     Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
     lxml 5.3.1
-    platformdirs 4.3.8
+    platformdirs 4.4.0
     pycountry 24.6.1
     PyYAML 6.0.2
-    requests 2.32.4
+    requests 2.32.5
     setuptools 80.9.0
     wcwidth 0.2.13
 -->
@@ -1046,11 +1046,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Detecting Outdated Proxy Configuration</td>
-<td class="right">June 2025</td>
+<td class="right">September 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rosomakho</td>
-<td class="center">Expires 31 December 2025</td>
+<td class="center">Expires 9 March 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1063,12 +1063,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-rosomakho-httpbis-outdated-proxy-config-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-29" class="published">29 June 2025</time>
+<time datetime="2025-09-05" class="published">5 September 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-31">31 December 2025</time></dd>
+<dd class="expires"><time datetime="2026-03-09">9 March 2026</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1117,7 +1117,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 31 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 9 March 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1184,6 +1184,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.4">
                 <p id="section-toc.1-1.6.2.4.1"><a href="#section-6.4" class="auto internal xref">6.4</a>.  <a href="#name-denial-of-service-considera" class="internal xref">Denial-of-Service Considerations</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.5">
+                <p id="section-toc.1-1.6.2.5.1"><a href="#section-6.5" class="auto internal xref">6.5</a>.  <a href="#name-inapplicability-to-non-conn" class="internal xref">Inapplicability to Non-CONNECT Proxying Modes</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
@@ -1218,7 +1221,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <p id="section-1-1">Explicit HTTP proxies are widely deployed in enterprise and managed network environments to enforce routing policies, enable traffic inspection, or implement access control. Clients relying on such proxies typically obtain configuration through a Proxy Auto-Configuration (PAC) file <span>[<a href="#PAC-FILE" class="cite xref">PAC-FILE</a>]</span> or a Provisioning Domain (PvD) <span>[<a href="#PROXY-PVD" class="cite xref">PROXY-PVD</a>]</span>. In many deployments, it is necessary to update these configurations in response to operational changes such as service onboarding, emergency routing adjustments, or policy corrections.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">Currently, clients have limited mechanisms to detect whether the proxy configuration they are using is stale. As a result, PAC files are often polled at short intervals, and PvD expiration times are configured with low values to accelerate refreshes. These approaches are inefficient and may introduce unnecessary network traffic or delay the application of important updates.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">This document defines a simple mechanism that enables a proxy to inform a client that its current configuration is outdated. The client includes in its request a structured field indicating the URL of the PAC file or PvD and the timestamp of when it last fetched the configuration. If the proxy recognizes the configuration and determines that a newer version is available, it may respond with a boolean indicator prompting the client to refresh the configuration.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">This mechanism applies to all forms of explicit proxying over HTTP, including:<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-4">This mechanism applies to forms of explicit proxying over HTTP where there is a clear separation between client headers intended for the proxy and headers intended for the origin server. This includes:<a href="#section-1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-5.1">
           <p id="section-1-5.1.1">HTTP CONNECT as defined <span><a href="https://rfc-editor.org/rfc/rfc9110#section-9.3.6" class="relref">Section 9.3.6</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span><a href="#section-1-5.1.1" class="pilcrow">¶</a></p>
@@ -1233,7 +1236,8 @@ svg :is([fill="white"], [fill^="#fff"]) {
           <p id="section-1-5.4.1">Templated <span>[<a href="#CONNECT-TCP" class="cite xref">CONNECT-TCP</a>]</span><a href="#section-1-5.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-1-6">The mechanism is optional, compatible with existing protocols, and requires no persistent state. It allows clients to discover configuration updates proactively while preserving the existing operational model.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-6">This mechanism is not applicable to HTTP/1.1 proxying modes that use the "absolute-form" request URI defined in <span><a href="https://rfc-editor.org/rfc/rfc9112#section-3.2.2" class="relref">Section 3.2.2</a> of [<a href="#H1" class="cite xref">HTTP/1.1</a>]</span> with HTTP methods other than CONNECT.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">The mechanism is optional, compatible with existing protocols, and requires no persistent state. It allows clients to discover configuration updates proactively while preserving the existing operational model.<a href="#section-1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1265,7 +1269,15 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <p id="section-4-1">The <code>Proxy-Config</code> request header field is used by a client to inform an explicit proxy about the proxy configuration it is currently using. The field conveys a dictionary structured field as defined in <span><a href="https://rfc-editor.org/rfc/rfc9651#section-3.2" class="relref">Section 3.2</a> of [<a href="#STRUCTURED-FIELD" class="cite xref">STRUCTURED-FIELD</a>]</span> with the following keys:<a href="#section-4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4-2.1">
-          <p id="section-4-2.1.1"><code>url</code> (optional): A string identifying the URL from which the client fetched the configuration. This may point to a PAC file or a PvD configuration. If omitted, the proxy is expected to infer the default PvD URI based on its own hostname and ".well-known/pvd" path as defined in <span><a href="https://rfc-editor.org/rfc/rfc8801#section-4.1" class="relref">Section 4.1</a> of [<a href="#PVDDATA" class="cite xref">PVDDATA</a>]</span>.<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-4-2.1.1"><code>url</code> (optional): A string identifying the URL from which the client fetched the configuration. This may point to a PAC file or a PvD configuration. It <span class="bcp14">MAY</span> be omitted in the following cases:<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4-2.1.2.1">
+              <p id="section-4-2.1.2.1.1">The client is using the default PvD URI based on proxy hostname and ".well-known/pvd" path as defined in <span><a href="https://rfc-editor.org/rfc/rfc8801#section-4.1" class="relref">Section 4.1</a> of [<a href="#PVDDATA" class="cite xref">PVDDATA</a>]</span>.<a href="#section-4-2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4-2.1.2.2">
+              <p id="section-4-2.1.2.2.1">The configuration was provisioned through a mechanism that is not associated with a specific URL, such as enterprise device management or a local policy engine<a href="#section-4-2.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
 </li>
         <li class="normal" id="section-4-2.2">
           <p id="section-4-2.2.1"><code>fetched</code> (required): A date value indicating when the client last fetched the configuration. The value <span class="bcp14">MUST</span> use the Date format defined in <span><a href="https://rfc-editor.org/rfc/rfc9651#section-3.3.7" class="relref">Section 3.3.7</a> of [<a href="#STRUCTURED-FIELD" class="cite xref">STRUCTURED-FIELD</a>]</span>.<a href="#section-4-2.2.1" class="pilcrow">¶</a></p>
@@ -1368,6 +1380,15 @@ Proxy-Config: fetched=@1748736000
 <p id="section-6.4-3">Clients <span class="bcp14">SHOULD</span> validate the authenticity and integrity of any fetched configuration before applying it, and ensure that configuration refreshes do not interfere with ongoing connection or session state.<a href="#section-6.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
+<div id="inapplicability-to-non-connect-proxying-modes">
+<section id="section-6.5">
+        <h3 id="name-inapplicability-to-non-conn">
+<a href="#section-6.5" class="section-number selfRef">6.5. </a><a href="#name-inapplicability-to-non-conn" class="section-name selfRef">Inapplicability to Non-CONNECT Proxying Modes</a>
+        </h3>
+<p id="section-6.5-1">This mechanism is not intended for use with HTTP/1.1 proxying models that rely on the "absolute-form" request URI defined in <span><a href="https://rfc-editor.org/rfc/rfc9112#section-3.2.2" class="relref">Section 3.2.2</a> of [<a href="#H1" class="cite xref">HTTP/1.1</a>]</span> with methods other than CONNECT. In such configurations, all client headers may be forwarded by the proxy to the destination server. This can result in unintended disclosure of internal configuration metadata.<a href="#section-6.5-1" class="pilcrow">¶</a></p>
+<p id="section-6.5-2">Clients <span class="bcp14">MUST</span> ensure that the <code>Proxy-Config</code> header is only sent when the proxying mode provides a clear separation between hop-by-hop headers (intended for the proxy) and end-to-end headers (intended for the destination server). This includes CONNECT-based methods such as CONNECT (<span><a href="https://rfc-editor.org/rfc/rfc9110#section-9.3.6" class="relref">Section 9.3.6</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span>), <span>[<a href="#CONNECT-UDP" class="cite xref">CONNECT-UDP</a>]</span>, <span>[<a href="#CONNECT-IP" class="cite xref">CONNECT-IP</a>]</span> and templated <span>[<a href="#CONNECT-TCP" class="cite xref">CONNECT-TCP</a>]</span>. These methods establish a tunnel or encapsulation that ensures <code>Proxy-Config</code> header is visible only to the proxy and is not forwarded to the destination server even if the proxy does not recognize it.<a href="#section-6.5-2" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="iana-considerations">
@@ -1417,6 +1438,10 @@ Proxy-Config: fetched=@1748736000
         <dd>
 <span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"HTTP Semantics"</span>, <span class="seriesInfo">STD 97</span>, <span class="seriesInfo">RFC 9110</span>, <span class="seriesInfo">DOI 10.17487/RFC9110</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9110">https://www.rfc-editor.org/rfc/rfc9110</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="H1">[HTTP/1.1]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"HTTP/1.1"</span>, <span class="seriesInfo">STD 99</span>, <span class="seriesInfo">RFC 9112</span>, <span class="seriesInfo">DOI 10.17487/RFC9112</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9112">https://www.rfc-editor.org/rfc/rfc9112</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
@@ -1444,7 +1469,7 @@ Proxy-Config: fetched=@1748736000
 <dd class="break"></dd>
 <dt id="CONNECT-TCP">[CONNECT-TCP]</dt>
         <dd>
-<span class="refAuthor">Schwartz, B. M.</span>, <span class="refTitle">"Template-Driven HTTP CONNECT Proxying for TCP"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-connect-tcp-08</span>, <time datetime="2025-06-11" class="refDate">11 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-connect-tcp-08">https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-connect-tcp-08</a>&gt;</span>. </dd>
+<span class="refAuthor">Schwartz, B. M.</span>, <span class="refTitle">"Template-Driven HTTP CONNECT Proxying for TCP"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-connect-tcp-09</span>, <time datetime="2025-06-30" class="refDate">30 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-connect-tcp-09">https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-connect-tcp-09</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="CONNECT-UDP">[CONNECT-UDP]</dt>
         <dd>
@@ -1456,7 +1481,7 @@ Proxy-Config: fetched=@1748736000
 <dd class="break"></dd>
 <dt id="PROXY-PVD">[PROXY-PVD]</dt>
         <dd>
-<span class="refAuthor">Pauly, T.</span>, <span class="refAuthor">Damjanovic, D.</span>, and <span class="refAuthor">Y. Rosomakho</span>, <span class="refTitle">"Communicating Proxy Configurations in Provisioning Domains"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-intarea-proxy-config-06</span>, <time datetime="2025-06-26" class="refDate">26 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-intarea-proxy-config-06">https://datatracker.ietf.org/doc/html/draft-ietf-intarea-proxy-config-06</a>&gt;</span>. </dd>
+<span class="refAuthor">Pauly, T.</span>, <span class="refAuthor">Damjanovic, D.</span>, and <span class="refAuthor">Y. Rosomakho</span>, <span class="refTitle">"Communicating Proxy Configurations in Provisioning Domains"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-intarea-proxy-config-07</span>, <time datetime="2025-07-26" class="refDate">26 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-intarea-proxy-config-07">https://datatracker.ietf.org/doc/html/draft-ietf-intarea-proxy-config-07</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="PVDDATA">[PVDDATA]</dt>
       <dd>

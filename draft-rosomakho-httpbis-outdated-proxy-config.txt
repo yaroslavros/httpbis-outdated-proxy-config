@@ -4,8 +4,8 @@
 
 HTTP                                                        Y. Rosomakho
 Internet-Draft                                                   Zscaler
-Intended status: Standards Track                            29 June 2025
-Expires: 31 December 2025
+Intended status: Standards Track                        5 September 2025
+Expires: 9 March 2026
 
 
                  Detecting Outdated Proxy Configuration
@@ -57,7 +57,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 31 December 2025.
+   This Internet-Draft will expire on 9 March 2026.
 
 Copyright Notice
 
@@ -87,6 +87,7 @@ Table of Contents
      6.2.  Trusted Communication Channels
      6.3.  Authentication-related Responses
      6.4.  Denial-of-Service Considerations
+     6.5.  Inapplicability to Non-CONNECT Proxying Modes
    7.  IANA Considerations
    8.  References
      8.1.  Normative References
@@ -120,8 +121,9 @@ Table of Contents
    determines that a newer version is available, it may respond with a
    boolean indicator prompting the client to refresh the configuration.
 
-   This mechanism applies to all forms of explicit proxying over HTTP,
-   including:
+   This mechanism applies to forms of explicit proxying over HTTP where
+   there is a clear separation between client headers intended for the
+   proxy and headers intended for the origin server.  This includes:
 
    *  HTTP CONNECT as defined Section 9.3.6 of [HTTP]
 
@@ -130,6 +132,10 @@ Table of Contents
    *  [CONNECT-IP]
 
    *  Templated [CONNECT-TCP]
+
+   This mechanism is not applicable to HTTP/1.1 proxying modes that use
+   the "absolute-form" request URI defined in Section 3.2.2 of
+   [HTTP/1.1] with HTTP methods other than CONNECT.
 
    The mechanism is optional, compatible with existing protocols, and
    requires no persistent state.  It allows clients to discover
@@ -173,9 +179,15 @@ Table of Contents
 
    *  url (optional): A string identifying the URL from which the client
       fetched the configuration.  This may point to a PAC file or a PvD
-      configuration.  If omitted, the proxy is expected to infer the
-      default PvD URI based on its own hostname and ".well-known/pvd"
-      path as defined in Section 4.1 of [PVDDATA].
+      configuration.  It MAY be omitted in the following cases:
+
+      -  The client is using the default PvD URI based on proxy hostname
+         and ".well-known/pvd" path as defined in Section 4.1 of
+         [PVDDATA].
+
+      -  The configuration was provisioned through a mechanism that is
+         not associated with a specific URL, such as enterprise device
+         management or a local policy engine
 
    *  fetched (required): A date value indicating when the client last
       fetched the configuration.  The value MUST use the Date format
@@ -286,6 +298,25 @@ Proxy-Config: url="https://config.example.net/proxy.pac", fetched=@1748736000
    configuration before applying it, and ensure that configuration
    refreshes do not interfere with ongoing connection or session state.
 
+6.5.  Inapplicability to Non-CONNECT Proxying Modes
+
+   This mechanism is not intended for use with HTTP/1.1 proxying models
+   that rely on the "absolute-form" request URI defined in Section 3.2.2
+   of [HTTP/1.1] with methods other than CONNECT.  In such
+   configurations, all client headers may be forwarded by the proxy to
+   the destination server.  This can result in unintended disclosure of
+   internal configuration metadata.
+
+   Clients MUST ensure that the Proxy-Config header is only sent when
+   the proxying mode provides a clear separation between hop-by-hop
+   headers (intended for the proxy) and end-to-end headers (intended for
+   the destination server).  This includes CONNECT-based methods such as
+   CONNECT (Section 9.3.6 of [HTTP]), [CONNECT-UDP], [CONNECT-IP] and
+   templated [CONNECT-TCP].  These methods establish a tunnel or
+   encapsulation that ensures Proxy-Config header is visible only to the
+   proxy and is not forwarded to the destination server even if the
+   proxy does not recognize it.
+
 7.  IANA Considerations
 
    This document registers the following HTTP header fields in the
@@ -316,6 +347,10 @@ Proxy-Config: url="https://config.example.net/proxy.pac", fetched=@1748736000
               DOI 10.17487/RFC9110, June 2022,
               <https://www.rfc-editor.org/rfc/rfc9110>.
 
+   [HTTP/1.1] Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
+              Ed., "HTTP/1.1", STD 99, RFC 9112, DOI 10.17487/RFC9112,
+              June 2022, <https://www.rfc-editor.org/rfc/rfc9112>.
+
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
@@ -341,9 +376,9 @@ Proxy-Config: url="https://config.example.net/proxy.pac", fetched=@1748736000
    [CONNECT-TCP]
               Schwartz, B. M., "Template-Driven HTTP CONNECT Proxying
               for TCP", Work in Progress, Internet-Draft, draft-ietf-
-              httpbis-connect-tcp-08, 11 June 2025,
+              httpbis-connect-tcp-09, 30 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-
-              connect-tcp-08>.
+              connect-tcp-09>.
 
    [CONNECT-UDP]
               Schinazi, D., "Proxying UDP in HTTP", RFC 9298,
@@ -359,9 +394,9 @@ Proxy-Config: url="https://config.example.net/proxy.pac", fetched=@1748736000
               Pauly, T., Damjanovic, D., and Y. Rosomakho,
               "Communicating Proxy Configurations in Provisioning
               Domains", Work in Progress, Internet-Draft, draft-ietf-
-              intarea-proxy-config-06, 26 June 2025,
+              intarea-proxy-config-07, 26 July 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-intarea-
-              proxy-config-06>.
+              proxy-config-07>.
 
    [PVDDATA]  Pfister, P., Vyncke, É., Pauly, T., Schinazi, D., and W.
               Shao, "Discovering Provisioning Domain Names and Data",
